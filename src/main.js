@@ -53,13 +53,12 @@ homeworkInput.addEventListener('change', async (e) => {
       return;
     }
     setWordBank(words);
-    ocrStatus.textContent = `Found ${words.length} words! Restarting…`;
-    setTimeout(() => {
-      ocrStatus.hidden = true;
-      const active = game.scene.getScenes(true).map((s) => s.scene.key);
-      active.forEach((key) => game.scene.stop(key));
-      game.scene.start('MenuScene');
-    }, 1500);
+    // Bonus feature: just swaps the word list. Never interrupts the current level;
+    // new words appear from the next block / word / round on.
+    ocrStatus.textContent = `Found ${words.length} words! They're in the game now.`;
+    setTimeout(() => (ocrStatus.hidden = true), 2500);
+    const menu = game.scene.getScene('MenuScene');
+    if (menu && menu.scene.isActive()) menu.refreshWords();
   } catch (err) {
     console.error(err);
     ocrStatus.textContent = 'Scan failed. Please try again.';

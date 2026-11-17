@@ -1,23 +1,29 @@
 import Phaser from 'phaser';
 import { randomWord } from '../../storage/wordBank.js';
 import { splitVowels } from '../../homework/parser.js';
+import { addBackground, playMusic, sfx } from '../audio.js';
+import { LEVELS, completeLevel, showIntro } from '../campaign.js';
 
 const VOWELS = ['a', 'e', 'i', 'o', 'u'];
 
 export class FighterScene extends Phaser.Scene {
   constructor() { super('FighterScene'); }
 
-  create() {
+  create(data) {
     const { width, height } = this.scale;
+    this.levelIdx = data?.level ?? 0;
+    const L = LEVELS[this.levelIdx];
+    this.enemyName = L.enemy || 'DOOM';
     this.wadeHP = 3;
-    this.doomHP = 3;
+    this.doomHP = L.hp || 3;
     this.locked = false;
     this.recentWords = [];
 
-    this.add.rectangle(0, 0, width, height, 0x1a0033).setOrigin(0);
+    addBackground(this, 'bgArena', 0x1a0033);
+    playMusic(this, 'music-arena');
 
     this.wade = this.add.image(width * 0.2, height * 0.62, 'wade').setScale(2);
-    this.doom = this.add.image(width * 0.8, height * 0.62, 'doom').setScale(2).setFlipX(true);
+    this.doom = this.add.image(width * 0.8, height * 0.62, 'doom').setScale(L.scale || 2).setFlipX(true);
 
     this.wadeHPText = this.add.text(30, 20, '', {
       fontFamily: '"Press Start 2P"', fontSize: '16px', color: '#00ffff'
@@ -51,6 +57,7 @@ export class FighterScene extends Phaser.Scene {
     this.input.keyboard.on('keydown-ESC', () => this.scene.start('MenuScene'));
 
     this.nextRound();
+    showIntro(this, this.levelIdx);
   }
 
   buildVowelButtons() {
@@ -104,6 +111,8 @@ export class FighterScene extends Phaser.Scene {
       yoyo: true,
       ease: 'Power2',
       onYoyo: () => {
+        sfx(this, 'sfx-punch');
+        sfx(this, 'sfx-correct', 0.5);
         this.doomHP = Math.max(0, this.doomHP - 1);
         this.updateHP();
         this.cameras.main.shake(160, 0.012);
@@ -123,6 +132,8 @@ export class FighterScene extends Phaser.Scene {
       yoyo: true,
       ease: 'Power2',
       onYoyo: () => {
+        sfx(this, 'sfx-punch');
+        sfx(this, 'sfx-wrong', 0.5);
         this.wadeHP = Math.max(0, this.wadeHP - 1);
         this.updateHP();
         this.cameras.main.shake(160, 0.012);
@@ -135,27 +146,31 @@ export class FighterScene extends Phaser.Scene {
 
   updateHP() {
     this.wadeHPText.setText('WADE ' + '♥'.repeat(this.wadeHP));
-    this.doomHPText.setText('♥'.repeat(this.doomHP) + ' DOOM');
+    this.doomHPText.setText('♥'.repeat(this.doomHP) + ' ' + this.enemyName);
   }
 
   checkWin() {
-    if (this.doomHP <= 0) this.endGame('YOU WIN!', '#00ff66');
-    else if (this.wadeHP <= 0) this.endGame('DOOM WINS…', '#ff1744');
+    if (this.doomHP <= 0) completeLevel(this, this.levelIdx, 50 + this.wadeHP * 10);
+    else if (this.wadeHP <= 0) this.endGame('OUCH! TRY AGAIN', '#ff1744');
     else this.time.delayedCall(700, () => this.nextRound());
   }
 
   endGame(msg, color) {
     const { width, height } = this.scale;
+    this.sound.stopAll();
+    sfx(this, 'sfx-lose');
     this.add.rectangle(0, 0, width, height, 0x000000, 0.75).setOrigin(0);
     this.add.text(width / 2, height / 2 - 40, msg, {
       fontFamily: '"Press Start 2P"', fontSize: '42px', color,
       stroke: '#000', strokeThickness: 6
     }).setOrigin(0.5);
-    this.add.text(width / 2, height / 2 + 50, 'Tap to return to menu', {
+    this.add.text(width / 2, height / 2 + 50, 'Tap to retry this level', {
       fontFamily: '"Press Start 2P"', fontSize: '14px', color: '#fff'
     }).setOrigin(0.5);
-    const back = () => this.scene.start('MenuScene');
-    this.input.once('pointerdown', back);
-    this.input.keyboard.once('keydown', back);
+    const retry = () => this.scene.restart({ level: this.levelIdx });
+    this.time.delayedCall(500, () => {
+      this.input.once('pointerdown', retry);
+      this.input.keyboard.once('keydown', retry);
+    });
   }
 }

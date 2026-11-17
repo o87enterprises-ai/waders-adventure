@@ -8,11 +8,34 @@ export class BootScene extends Phaser.Scene {
     this.load.image('wade', 'assets/wade.png');
     this.load.image('doom', 'assets/doom.png');
     this.load.image('spidey', 'assets/spidey.png');
+    this.load.image('vowelBtn', 'assets/btn-vowel.png');
+    this.load.image('wordBlock', 'assets/word-block.png');
+    this.load.image('heart', 'assets/heart-icon.png');
+    this.load.image('scoreBadge', 'assets/score-badge.png');
+    this.load.image('cloud', 'assets/cloud-platform.png');
+    this.load.image('bgMenu', 'assets/bg-menu.png');
+    this.load.image('bgArena', 'assets/bg-arena.png');
+    this.load.image('bgPlatform', 'assets/bg-platform.png');
+    this.load.image('bgMini', 'assets/bg-mini.png');
+    this.load.spritesheet('bot', 'assets/bot-sheet.png', { frameWidth: 48, frameHeight: 48 });
+    this.load.spritesheet('drone', 'assets/drone-sheet.png', { frameWidth: 48, frameHeight: 48 });
+    this.load.image('spikes', 'assets/spikes.png');
+    this.load.image('title', 'assets/title-screen.png');
+    this.load.image('spideyCameo', 'assets/spidey-cameo.png');
+    for (const k of ['music-menu', 'music-arena', 'music-platform', 'sfx-punch', 'sfx-correct',
+      'sfx-wrong', 'sfx-coin', 'sfx-win', 'sfx-lose']) {
+      this.load.audio(k, `audio/${k}.wav`);
+    }
     this.load.on('loaderror', (f) => console.warn('Missing asset, will use placeholder:', f.key));
   }
 
   create() {
     this.makePlaceholders();
+    for (const k of ['bot', 'drone']) {
+      if (this.textures.exists(k) && !this.anims.exists(`${k}-move`)) {
+        this.anims.create({ key: `${k}-move`, frames: this.anims.generateFrameNumbers(k, { start: 0, end: 1 }), frameRate: k === 'bot' ? 5 : 12, repeat: -1 });
+      }
+    }
     this.scene.start('MenuScene');
   }
 
