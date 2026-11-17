@@ -1,39 +1,54 @@
 import Phaser from 'phaser';
+import { addBackground, playMusic } from '../audio.js';
+import { LEVELS, getProgress, resetProgress, startLevel } from '../campaign.js';
+import { customWordCount, clearWordBank } from '../../storage/wordBank.js';
 
+const FONT = '"Press Start 2P"';
+
+// Title screen: tap anywhere to start (or continue) the campaign.
 export class MenuScene extends Phaser.Scene {
   constructor() { super('MenuScene'); }
 
   create() {
     const { width, height } = this.scale;
+    addBackground(this, this.textures.exists('title') ? 'title' : 'bgMenu', 0x1a0033);
+    playMusic(this, 'music-menu');
 
-    this.add.rectangle(0, 0, width, height, 0x1a0033).setOrigin(0);
+    const prog = getProgress();
+    const resuming = prog.level > 0;
 
-    this.add.text(width / 2, 70, "WADER'S", {
-      fontFamily: '"Press Start 2P"', fontSize: '40px',
-      color: '#ff2d55', stroke: '#000', strokeThickness: 6
-    }).setOrigin(0.5);
+    if (resuming) {
+      this.add.text(width / 2, height - 52, `CONTINUE  LEVEL ${prog.level + 1}: ${LEVELS[prog.level].name}`, {
+        fontFamily: FONT, fontSize: '12px', color: '#ffff00', stroke: '#000', strokeThickness: 4
+      }).setOrigin(0.5);
+      this.small(width - 12, 12, 'NEW GAME', 1, 0, () => { resetProgress(); this.scene.restart(); });
+    }
 
-    this.add.text(width / 2, 130, 'ADVENTURE', {
-      fontFamily: '"Press Start 2P"', fontSize: '48px',
-      color: '#ffff00', stroke: '#000', strokeThickness: 6
-    }).setOrigin(0.5);
+    this.wordLabel = this.small(12, 12, '', 0, 0, () => {
+      if (customWordCount()) { clearWordBank(); this.refreshWords(); }
+    });
+    this.refreshWords();
 
-    this.add.image(140, height - 140, 'wade').setScale(1.6);
-    this.add.image(width - 140, height - 140, 'doom').setScale(1.6).setFlipX(true);
-
-    this.makeButton(width / 2, 240, '⚔️  1v1 FIGHT', () => this.scene.start('FighterScene'));
-    this.makeButton(width / 2, 320, '🏃  PLATFORMER', () => this.scene.start('PlatformerScene'));
-    this.makeButton(width / 2, 400, '🧩  MINI MISSION', () => this.scene.start('MiniMissionScene'));
+    // Anywhere else on screen starts the game.
+    const start = () => startLevel(this, prog.level);
+    this.time.delayedCall(250, () => {
+      this.input.on('pointerdown', (_p, over) => { if (!over.length) start(); });
+      this.input.keyboard.once('keydown-ENTER', start);
+      this.input.keyboard.once('keydown-SPACE', start);
+    });
   }
 
-  makeButton(x, y, label, onClick) {
-    const btn = this.add.text(x, y, label, {
-      fontFamily: '"Press Start 2P"', fontSize: '20px', color: '#fff',
-      backgroundColor: '#0066ff', padding: { x: 20, y: 14 }
-    }).setOrigin(0.5).setInteractive({ useHandCursor: true });
-    btn.on('pointerover', () => btn.setStyle({ backgroundColor: '#3388ff' }));
-    btn.on('pointerout', () => btn.setStyle({ backgroundColor: '#0066ff' }));
-    btn.on('pointerdown', onClick);
-    return btn;
+  small(x, y, label, ox, oy, onClick) {
+    const t = this.add.text(x, y, label, {
+      fontFamily: FONT, fontSize: '10px', color: '#fff',
+      backgroundColor: '#33336699', padding: { x: 6, y: 5 }
+    }).setOrigin(ox, oy).setInteractive({ useHandCursor: true });
+    t.on('pointerdown', onClick);
+    return t;
+  }
+
+  refreshWords() {
+    const n = customWordCount();
+    this.wordLabel.setText(n ? `HOMEWORK WORDS: ${n}  (TAP TO RESET)` : 'WORDS: STANDARD');
   }
 }
