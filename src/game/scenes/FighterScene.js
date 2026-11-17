@@ -3,6 +3,7 @@ import { randomWord } from '../../storage/wordBank.js';
 import { splitVowels } from '../../homework/parser.js';
 import { addBackground, playMusic, sfx } from '../audio.js';
 import { LEVELS, completeLevel, showIntro } from '../campaign.js';
+import { clueFor, speak } from '../hints.js';
 
 const VOWELS = ['a', 'e', 'i', 'o', 'u'];
 
@@ -37,7 +38,15 @@ export class FighterScene extends Phaser.Scene {
       stroke: '#000', strokeThickness: 8
     }).setOrigin(0.5);
 
-    this.feedbackText = this.add.text(width / 2, 190, '', {
+    this.clueText = this.add.text(width / 2, 165, '', {
+      fontFamily: '"Press Start 2P"', fontSize: '14px', color: '#ffffff',
+      stroke: '#000', strokeThickness: 4
+    }).setOrigin(0.5);
+    this.add.text(width / 2 + 330, 110, '🔊', { fontSize: '36px' }).setOrigin(0.5)
+      .setInteractive({ useHandCursor: true })
+      .on('pointerdown', () => speak(this.currentWord));
+
+    this.feedbackText = this.add.text(width / 2, 200, '', {
       fontFamily: '"Press Start 2P"', fontSize: '18px', color: '#fff'
     }).setOrigin(0.5);
 
@@ -93,6 +102,8 @@ export class FighterScene extends Phaser.Scene {
     this.promptText.setText(
       `${parts.consonantStart.toUpperCase()}  _  ${parts.consonantEnd.toUpperCase()}`
     );
+    this.clueText.setText(clueFor(word));
+    speak(word);
   }
 
   onVowel(v) {
@@ -125,6 +136,7 @@ export class FighterScene extends Phaser.Scene {
 
   onWrong(picked) {
     this.feedbackText.setText(`Not "${picked}" — try "${this.currentVowel}"!`).setColor('#ff6666');
+    this.time.delayedCall(350, () => speak(this.currentWord));
     this.tweens.add({
       targets: this.doom,
       x: this.doom.x - 200,

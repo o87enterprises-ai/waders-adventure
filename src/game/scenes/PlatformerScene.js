@@ -3,6 +3,7 @@ import { randomWord } from '../../storage/wordBank.js';
 import { splitVowels } from '../../homework/parser.js';
 import { addBackground, playMusic, sfx } from '../audio.js';
 import { LEVELS, completeLevel, showIntro } from '../campaign.js';
+import { clueFor, speak } from '../hints.js';
 
 const VOWELS = ['a', 'e', 'i', 'o', 'u'];
 const FONT = '"Press Start 2P"';
@@ -332,9 +333,16 @@ export class PlatformerScene extends Phaser.Scene {
       `${p.consonantStart.toUpperCase()}  _  ${p.consonantEnd.toUpperCase()}`, {
         fontFamily: FONT, fontSize: '40px', color: '#ffff00', stroke: '#000', strokeThickness: 6
       }).setOrigin(0.5).setScrollFactor(0).setDepth(D + 1);
-    const sub = this.add.text(width / 2, height / 2 - 30, 'PICK THE VOWEL', {
+    const clue = clueFor(block.word);
+    const sub = this.add.text(width / 2, height / 2 - 34, clue || 'PICK THE VOWEL', {
       fontFamily: FONT, fontSize: '14px', color: '#fff'
     }).setOrigin(0.5).setScrollFactor(0).setDepth(D + 1);
+    const hear = this.add.text(width / 2, height / 2 - 6, '🔊 HEAR IT', {
+      fontFamily: FONT, fontSize: '12px', color: '#fff',
+      backgroundColor: '#2266cc', padding: { x: 10, y: 6 }
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(D + 1).setInteractive({ useHandCursor: true });
+    hear.on('pointerdown', () => speak(block.word));
+    speak(block.word);
 
     const buttons = VOWELS.map((v, i) => {
       const bx = width / 2 + (i - 2) * 100;
@@ -346,7 +354,7 @@ export class PlatformerScene extends Phaser.Scene {
       return b;
     });
 
-    const ui = [overlay, title, sub, ...buttons];
+    const ui = [overlay, title, sub, hear, ...buttons];
     const onKey = (e) => {
       const key = e.key.toLowerCase();
       if (VOWELS.includes(key)) finish(key);
@@ -359,6 +367,7 @@ export class PlatformerScene extends Phaser.Scene {
       if (picked === block.vowel) this.solveBlock(block);
       else {
         sfx(this, 'sfx-wrong');
+        this.time.delayedCall(350, () => speak(block.word)); // replay the word as a second hint
         this.cameras.main.shake(200, 0.01);
         block.lockUntil = this.time.now + 700;
         this.wade.setVelocityY(0);
