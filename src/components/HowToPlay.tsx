@@ -149,11 +149,11 @@ export default function HowToPlay() {
               <dl className="mt-4 space-y-3 font-semibold">
                 <div className="flex flex-wrap items-center gap-2">
                   <dt className="w-24 shrink-0">Move</dt>
-                  <dd className="flex flex-wrap gap-1"><Key>◀</Key> <Key>▶</Key> buttons, bottom left</dd>
+                  <dd>Touch the left side and <strong>slide &amp; hold</strong> toward where you want to go. Lift to stop.</dd>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <dt className="w-24 shrink-0">Jump</dt>
-                  <dd className="flex flex-wrap gap-1"><Key>▲</Key> button, bottom right</dd>
+                  <dd>Tap the right side of the screen (or the <Key>▲</Key> button). Use a second finger while sliding!</dd>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <dt className="w-24 shrink-0">Pick vowel</dt>
