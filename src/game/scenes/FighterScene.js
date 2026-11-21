@@ -3,7 +3,7 @@ import { randomWord } from '../../storage/wordBank.js';
 import { splitVowels } from '../../homework/parser.js';
 import { addBackground, playMusic, sfx } from '../audio.js';
 import { LEVELS, completeLevel, showIntro } from '../campaign.js';
-import { clueFor, speak } from '../hints.js';
+import { clueFor, sentenceFor, speak, vowelReminder, VOWEL_KEYWORDS } from '../hints.js';
 
 const VOWELS = ['a', 'e', 'i', 'o', 'u'];
 
@@ -33,6 +33,9 @@ export class FighterScene extends Phaser.Scene {
       fontFamily: '"Press Start 2P"', fontSize: '16px', color: '#ff00ff'
     }).setOrigin(1, 0);
 
+    // The arena background has neon signs painted on it; a dark panel keeps the hint text readable.
+    this.add.rectangle(width / 2, 192, 780, 104, 0x000000, 0.6).setStrokeStyle(3, 0xffe066, 0.5);
+
     this.promptText = this.add.text(width / 2, 110, '', {
       fontFamily: '"Press Start 2P"', fontSize: '48px', color: '#ffff00',
       stroke: '#000', strokeThickness: 8
@@ -42,12 +45,16 @@ export class FighterScene extends Phaser.Scene {
       fontFamily: '"Press Start 2P"', fontSize: '14px', color: '#ffffff',
       stroke: '#000', strokeThickness: 4
     }).setOrigin(0.5);
+    this.sentenceText = this.add.text(width / 2, 192, '', {
+      fontFamily: '"Press Start 2P"', fontSize: '12px', color: '#ffe066',
+      stroke: '#000', strokeThickness: 4
+    }).setOrigin(0.5);
     this.add.text(width / 2 + 330, 110, '🔊', { fontSize: '36px' }).setOrigin(0.5)
       .setInteractive({ useHandCursor: true })
       .on('pointerdown', () => speak(this.currentWord));
 
-    this.feedbackText = this.add.text(width / 2, 200, '', {
-      fontFamily: '"Press Start 2P"', fontSize: '18px', color: '#fff'
+    this.feedbackText = this.add.text(width / 2, 228, '', {
+      fontFamily: '"Press Start 2P"', fontSize: '15px', color: '#fff'
     }).setOrigin(0.5);
 
     this.buildVowelButtons();
@@ -83,6 +90,10 @@ export class FighterScene extends Phaser.Scene {
       const label = this.add.text(x, btnY, v.toUpperCase(), {
         fontFamily: '"Press Start 2P"', fontSize: '32px', color: '#000'
       }).setOrigin(0.5);
+      this.add.text(x, btnY + 46, VOWEL_KEYWORDS[v], {
+        fontFamily: '"Press Start 2P"', fontSize: '9px', color: '#ffe066',
+        stroke: '#000', strokeThickness: 3
+      }).setOrigin(0.5);
       img.on('pointerdown', () => this.onVowel(v));
       // subtle bounce
       this.tweens.add({ targets: img, scale: 0.95, duration: 500, yoyo: true, repeat: -1 });
@@ -103,6 +114,7 @@ export class FighterScene extends Phaser.Scene {
       `${parts.consonantStart.toUpperCase()}  _  ${parts.consonantEnd.toUpperCase()}`
     );
     this.clueText.setText(clueFor(word));
+    this.sentenceText.setText(sentenceFor(word));
     speak(word);
   }
 
@@ -135,7 +147,8 @@ export class FighterScene extends Phaser.Scene {
   }
 
   onWrong(picked) {
-    this.feedbackText.setText(`Not "${picked}" — try "${this.currentVowel}"!`).setColor('#ff6666');
+    this.feedbackText.setText(`Not ${picked.toUpperCase()}! ${vowelReminder(this.currentWord, this.currentVowel)}`)
+      .setColor('#ff6666');
     this.time.delayedCall(350, () => speak(this.currentWord));
     this.tweens.add({
       targets: this.doom,
