@@ -4,6 +4,8 @@ export class BootScene extends Phaser.Scene {
   constructor() { super('BootScene'); }
 
   preload() {
+    // The game is served from /play, so asset paths must be absolute from the site root.
+    this.load.setBaseURL('/');
     // Attempt to load real assets; if missing, we fall back to placeholders.
     this.load.image('wade', 'assets/wade.png');
     this.load.image('doom', 'assets/doom.png');
