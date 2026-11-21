@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import HowToPlay from '@/components/HowToPlay';
 
 export default function WadersAdventurePage() {
   return (
@@ -172,6 +173,9 @@ export default function WadersAdventurePage() {
         </div>
       </section>
 
+      {/* HOW TO PLAY */}
+      <HowToPlay />
+
       {/* ACTION MENU */}
       <section className="py-24 bg-[#16092c]">
         <div className="text-center px-6">
@@ -182,7 +186,7 @@ export default function WadersAdventurePage() {
               PLAY
             </Link>
 
-            <a href="#power-up" className="action-btn bg-blue-600">
+            <a href="#how-to-play" className="action-btn bg-blue-600">
               HOW TO PLAY
             </a>
 

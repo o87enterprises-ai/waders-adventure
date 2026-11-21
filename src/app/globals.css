@@ -72,6 +72,19 @@ body {
     text-align: center;
   }
 
+  .key {
+    display: inline-block;
+    min-width: 2rem;
+    padding: 0.15rem 0.6rem;
+    text-align: center;
+    background: #f1f1f1;
+    color: #000;
+    border: 3px solid #000;
+    border-bottom-width: 5px;
+    border-radius: 8px;
+    font-weight: 900;
+  }
+
   .pow {
     color: red;
     font-size: 2rem;
