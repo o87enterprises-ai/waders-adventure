@@ -3,7 +3,7 @@ import { randomWord } from '../../storage/wordBank.js';
 import { splitVowels } from '../../homework/parser.js';
 import { addBackground, playMusic, sfx } from '../audio.js';
 import { LEVELS, completeLevel, showIntro } from '../campaign.js';
-import { clueFor, speak } from '../hints.js';
+import { clueFor, sentenceFor, speak, vowelReminder, VOWEL_KEYWORDS } from '../hints.js';
 
 const VOWELS = ['a', 'e', 'i', 'o', 'u'];
 const FONT = '"Press Start 2P"';
@@ -329,24 +329,32 @@ export class PlatformerScene extends Phaser.Scene {
     const overlay = this.add.rectangle(width / 2, height / 2, width, 280, 0x000000, 0.88)
       .setScrollFactor(0).setDepth(D);
     const p = splitVowels(block.word);
-    const title = this.add.text(width / 2, height / 2 - 80,
+    const title = this.add.text(width / 2, height / 2 - 92,
       `${p.consonantStart.toUpperCase()}  _  ${p.consonantEnd.toUpperCase()}`, {
         fontFamily: FONT, fontSize: '40px', color: '#ffff00', stroke: '#000', strokeThickness: 6
       }).setOrigin(0.5).setScrollFactor(0).setDepth(D + 1);
     const clue = clueFor(block.word);
-    const sub = this.add.text(width / 2, height / 2 - 34, clue || 'PICK THE VOWEL', {
-      fontFamily: FONT, fontSize: '14px', color: '#fff'
+    const sub = this.add.text(width / 2, height / 2 - 52, clue || 'PICK THE VOWEL', {
+      fontFamily: FONT, fontSize: '13px', color: '#fff', align: 'center', wordWrap: { width: width - 80 }
     }).setOrigin(0.5).setScrollFactor(0).setDepth(D + 1);
-    const hear = this.add.text(width / 2, height / 2 - 6, '🔊 HEAR IT', {
+    const sentence = this.add.text(width / 2, height / 2 - 24, sentenceFor(block.word), {
+      fontFamily: FONT, fontSize: '12px', color: '#ffe066', align: 'center', wordWrap: { width: width - 80 }
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(D + 1);
+    const hear = this.add.text(width / 2, height / 2 + 8, '🔊 HEAR IT', {
       fontFamily: FONT, fontSize: '12px', color: '#fff',
       backgroundColor: '#2266cc', padding: { x: 10, y: 6 }
     }).setOrigin(0.5).setScrollFactor(0).setDepth(D + 1).setInteractive({ useHandCursor: true });
     hear.on('pointerdown', () => speak(block.word));
     speak(block.word);
 
+    const keywords = [];
     const buttons = VOWELS.map((v, i) => {
       const bx = width / 2 + (i - 2) * 100;
-      const b = this.add.text(bx, height / 2 + 45, v.toUpperCase(), {
+      const kw = this.add.text(bx, height / 2 + 104, VOWEL_KEYWORDS[v], {
+        fontFamily: FONT, fontSize: '9px', color: '#ffe066'
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(D + 1);
+      keywords.push(kw);
+      const b = this.add.text(bx, height / 2 + 62, v.toUpperCase(), {
         fontFamily: FONT, fontSize: '28px', color: '#000',
         backgroundColor: '#ffcc00', padding: { x: 16, y: 16 }
       }).setOrigin(0.5).setScrollFactor(0).setDepth(D + 1).setInteractive({ useHandCursor: true });
@@ -354,7 +362,7 @@ export class PlatformerScene extends Phaser.Scene {
       return b;
     });
 
-    const ui = [overlay, title, sub, hear, ...buttons];
+    const ui = [overlay, title, sub, sentence, hear, ...buttons, ...keywords];
     const onKey = (e) => {
       const key = e.key.toLowerCase();
       if (VOWELS.includes(key)) finish(key);
@@ -367,7 +375,10 @@ export class PlatformerScene extends Phaser.Scene {
       if (picked === block.vowel) this.solveBlock(block);
       else {
         sfx(this, 'sfx-wrong');
-        this.time.delayedCall(350, () => speak(block.word)); // replay the word as a second hint
+        this.time.delayedCall(350, () => speak(block.word)); // replay the word + sentence as a second hint
+        const normalHint = 'BUMP ? BLOCKS FROM BELOW · STOMP THE BOTS!';
+        this.hintText.setText(`NOT ${picked.toUpperCase()}! ${vowelReminder(block.word, block.vowel)}`);
+        this.time.delayedCall(4000, () => { if (!this.done && this.hintText.text.startsWith('NOT ')) this.hintText.setText(normalHint); });
         this.cameras.main.shake(200, 0.01);
         block.lockUntil = this.time.now + 700;
         this.wade.setVelocityY(0);
