@@ -78,9 +78,9 @@ const LEVEL_TYPES = [
 
 export default function HowToPlay() {
   return (
-    <section id="how-to-play" className="py-24 bg-[#130726] scroll-mt-4">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="comic-panel bg-[#2c0d43]">
+    <section id="how-to-play" className="grid-bg py-20 md:py-24 scroll-mt-4">
+      <div className="max-w-6xl mx-auto px-5 md:px-6">
+        <div className="comic-panel !bg-[#2c0d43]">
           <h2 className="comic-title">HOW TO PLAY</h2>
           <p className="text-center text-slate-200 text-lg mt-4 max-w-2xl mx-auto">
             Wade has <strong>8 levels</strong> to beat, ending with Doctor Doom. Here&apos;s how
@@ -91,35 +91,35 @@ export default function HowToPlay() {
           <ol className="grid md:grid-cols-3 gap-8 mt-12">
             {STEPS.map((s) => (
               <li key={s.n} className="feature-card relative !pt-10">
-                <span className="absolute -top-5 left-1/2 -translate-x-1/2 grid h-10 w-10 place-items-center rounded-full border-4 border-black bg-yellow-400 font-black text-black">
+                <span className="absolute -top-5 left-1/2 -translate-x-1/2 grid h-10 w-10 place-items-center border-4 border-black bg-yellow-400 font-pixel text-xs text-black">
                   {s.n}
                 </span>
                 <div className="pow">{s.pow}</div>
-                <h3 className="mt-2 text-xl font-black">{s.title}</h3>
+                <h3 className="mt-3 font-pixel text-[0.75rem] leading-relaxed">{s.title}</h3>
                 <p className="mt-3 text-base font-semibold text-slate-700">{s.body}</p>
               </li>
             ))}
           </ol>
 
           {/* Level types */}
-          <h3 className="mt-16 text-2xl md:text-3xl font-black text-center">
+          <h3 className="pixel-heading mt-16 text-center text-base md:text-2xl">
             THREE KINDS OF LEVELS
           </h3>
           <div className="grid md:grid-cols-3 gap-8 mt-8">
             {LEVEL_TYPES.map((t) => (
-              <div key={t.name} className="rounded-2xl border-4 border-black bg-[#3c1974] p-6 shadow-[6px_6px_0_#000]">
-                <div className="font-black text-yellow-300 text-2xl">{t.pow}</div>
-                <h4 className="mt-1 text-xl font-black">{t.name}</h4>
+              <div key={t.name} className="border-[5px] border-black bg-[#3c1974] p-6 shadow-[6px_6px_0_#000]">
+                <div className="font-pixel text-yellow-300 text-lg">{t.pow}</div>
+                <h4 className="mt-3 font-pixel text-[0.75rem] leading-relaxed">{t.name}</h4>
                 <p className="mt-3 text-slate-200">{t.body}</p>
               </div>
             ))}
           </div>
 
           {/* Controls */}
-          <h3 className="mt-16 text-2xl md:text-3xl font-black text-center">CONTROLS</h3>
+          <h3 className="pixel-heading mt-16 text-center text-base md:text-2xl">CONTROLS</h3>
           <div className="grid md:grid-cols-2 gap-8 mt-8">
-            <div className="rounded-2xl border-4 border-black bg-white p-6 text-black shadow-[6px_6px_0_#000]">
-              <h4 className="text-xl font-black">⌨️ Keyboard</h4>
+            <div className="border-[5px] border-black bg-white p-6 text-black shadow-[6px_6px_0_#000]">
+              <h4 className="font-pixel text-[0.8rem]">⌨️ Keyboard</h4>
               <dl className="mt-4 space-y-3 font-semibold">
                 <div className="flex flex-wrap items-center gap-2">
                   <dt className="w-24 shrink-0">Move</dt>
@@ -144,16 +144,16 @@ export default function HowToPlay() {
               </dl>
             </div>
 
-            <div className="rounded-2xl border-4 border-black bg-white p-6 text-black shadow-[6px_6px_0_#000]">
-              <h4 className="text-xl font-black">📱 Touch screen</h4>
+            <div className="border-[5px] border-black bg-white p-6 text-black shadow-[6px_6px_0_#000]">
+              <h4 className="font-pixel text-[0.8rem]">📱 Touch screen</h4>
               <dl className="mt-4 space-y-3 font-semibold">
                 <div className="flex flex-wrap items-center gap-2">
                   <dt className="w-24 shrink-0">Move</dt>
-                  <dd className="flex flex-wrap gap-1"><Key>◀</Key> <Key>▶</Key> buttons, bottom left</dd>
+                  <dd>Touch the left side and <strong>slide &amp; hold</strong> toward where you want to go. Lift to stop.</dd>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <dt className="w-24 shrink-0">Jump</dt>
-                  <dd className="flex flex-wrap gap-1"><Key>▲</Key> button, bottom right</dd>
+                  <dd>Tap the right side of the screen (or the <Key>▲</Key> button). Use a second finger while sliding!</dd>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <dt className="w-24 shrink-0">Pick vowel</dt>
@@ -172,8 +172,8 @@ export default function HowToPlay() {
           </div>
 
           {/* Good to know */}
-          <div className="mt-12 rounded-2xl border-4 border-dashed border-yellow-300 p-6">
-            <h3 className="text-xl font-black text-yellow-300">GOOD TO KNOW</h3>
+          <div className="mt-12 border-4 border-dashed border-yellow-300 p-6">
+            <h3 className="font-pixel text-sm text-yellow-300">GOOD TO KNOW</h3>
             <ul className="mt-3 space-y-2 text-slate-200 list-disc pl-6">
               <li>
                 <strong>Progress saves itself</strong> on this device. Press <strong>NEW GAME</strong>{' '}

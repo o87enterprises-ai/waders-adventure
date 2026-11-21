@@ -64,7 +64,7 @@ export default function GameClient() {
 
   return (
     <div className="fixed inset-0 bg-black overflow-hidden font-pixel">
-      <div ref={containerRef} className="h-full w-full [&_canvas]:mx-auto [&_canvas]:block" />
+      <div ref={containerRef} className="h-full w-full touch-none [&_canvas]:mx-auto [&_canvas]:block" />
 
       <Link
         href="/"

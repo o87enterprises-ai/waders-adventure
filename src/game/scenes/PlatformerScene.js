@@ -85,20 +85,85 @@ export class PlatformerScene extends Phaser.Scene {
       left: 'LEFT', right: 'RIGHT', up: 'UP', space: 'SPACE', a: 'A', d: 'D', w: 'W'
     });
 
-    this.input.addPointer(2);
-    const mk = (x, label, on, off) => {
-      const b = this.add.text(x, H - 60, label, {
-        fontFamily: FONT, fontSize: '26px', color: '#fff',
-        backgroundColor: '#444a88cc', padding: { x: 14, y: 14 }
-      }).setOrigin(0.5).setScrollFactor(0).setDepth(50).setInteractive();
-      b.on('pointerdown', on);
-      if (off) { b.on('pointerup', off); b.on('pointerout', off); }
-    };
-    mk(70, '◀', () => (this.touch.left = true), () => (this.touch.left = false));
-    mk(180, '▶', () => (this.touch.right = true), () => (this.touch.right = false));
-    mk(SW - 80, '▲', () => (this.touch.jump = true));
+    this.buildTouchControls(SW, H);
 
     showIntro(this, this.levelIdx);
+  }
+
+  // Touch controls: a floating "slide pad". Touch anywhere on the left side and hold; Wade runs toward
+  // wherever the finger has drifted from where it first touched. The anchor follows the finger once it
+  // passes SLIDE_RANGE, so reversing only needs a small slide back. Lifting the finger stops Wade.
+  // Tapping the right side (or the ▲ button) jumps, and a second finger can jump while the first slides.
+  buildTouchControls(SW, H) {
+    const SLIDE_RANGE = 60; // px the finger can drift before the anchor starts following it
+    const DEAD_ZONE = 14; // px of drift ignored so a plain touch doesn't move Wade
+    const MOVE_ZONE = SW * 0.62;
+    const hasTouch = this.sys.game.device.input.touch;
+    this.slide = null;
+    this.input.addPointer(2);
+
+    // Pad graphics, shown only while a finger is down.
+    this.padBase = this.add.circle(0, 0, SLIDE_RANGE + 18, 0xffffff, 0.16).setStrokeStyle(3, 0xffffff, 0.5)
+      .setScrollFactor(0).setDepth(60).setVisible(false);
+    this.padKnob = this.add.circle(0, 0, 28, 0xffe066, 0.75).setStrokeStyle(3, 0x000000, 0.8)
+      .setScrollFactor(0).setDepth(61).setVisible(false);
+    this.padArrows = this.add.text(0, 0, '◀        ▶', { fontFamily: FONT, fontSize: '20px', color: '#fff' })
+      .setOrigin(0.5).setScrollFactor(0).setDepth(60).setAlpha(0.7).setVisible(false);
+
+    // Idle hints (touch devices only).
+    if (hasTouch) {
+      this.add.text(MOVE_ZONE / 2, H - 50, '◀  SLIDE & HOLD  ▶', {
+        fontFamily: FONT, fontSize: '14px', color: '#fff', stroke: '#000', strokeThickness: 4
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(50).setAlpha(0.7);
+    }
+    // ▲ button stays for discoverability.
+    // Sits above the page's SCAN HOMEWORK overlay button so it stays visible on phones.
+    const jumpBtn = this.add.text(SW - 80, H - 150, '▲', {
+      fontFamily: FONT, fontSize: '26px', color: '#fff',
+      backgroundColor: '#444a88cc', padding: { x: 14, y: 14 }
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(50).setInteractive();
+    jumpBtn.on('pointerdown', () => (this.touch.jump = true));
+
+    const endSlide = () => {
+      this.slide = null;
+      this.touch.left = false;
+      this.touch.right = false;
+      this.padBase.setVisible(false);
+      this.padKnob.setVisible(false);
+      this.padArrows.setVisible(false);
+    };
+    this.endSlide = endSlide;
+
+    this.input.on('pointerdown', (pointer, over) => {
+      if (over.length || this.promptActive || this.done) return;
+      if (pointer.x < MOVE_ZONE) {
+        if (this.slide) return;
+        this.slide = { id: pointer.id, anchorX: pointer.x };
+        this.padBase.setPosition(pointer.x, pointer.y).setVisible(true);
+        this.padKnob.setPosition(pointer.x, pointer.y).setVisible(true);
+        this.padArrows.setPosition(pointer.x, pointer.y).setVisible(true);
+      } else if (pointer.wasTouch) {
+        this.touch.jump = true; // tap the right side to jump
+      }
+    });
+
+    this.input.on('pointermove', (pointer) => {
+      const sl = this.slide;
+      if (!sl || pointer.id !== sl.id) return;
+      let dx = pointer.x - sl.anchorX;
+      if (dx > SLIDE_RANGE) { sl.anchorX = pointer.x - SLIDE_RANGE; dx = SLIDE_RANGE; }
+      else if (dx < -SLIDE_RANGE) { sl.anchorX = pointer.x + SLIDE_RANGE; dx = -SLIDE_RANGE; }
+      this.touch.right = dx > DEAD_ZONE;
+      this.touch.left = dx < -DEAD_ZONE;
+      this.padBase.setPosition(sl.anchorX, this.padBase.y);
+      this.padArrows.setPosition(sl.anchorX, this.padBase.y);
+      this.padKnob.setPosition(sl.anchorX + dx, this.padBase.y);
+    });
+
+    const release = (pointer) => { if (this.slide && pointer.id === this.slide.id) endSlide(); };
+    this.input.on('pointerup', release);
+    this.input.on('pointerupoutside', release);
+    this.input.on('gameout', endSlide);
   }
 
   blockX(i) {
@@ -322,6 +387,7 @@ export class PlatformerScene extends Phaser.Scene {
 
   openVowelPrompt(block) {
     this.promptActive = true;
+    if (this.endSlide) this.endSlide();
     this.physics.pause();
     const { width, height } = this.scale;
     const D = 100;

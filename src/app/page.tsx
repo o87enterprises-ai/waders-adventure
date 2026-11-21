@@ -7,10 +7,11 @@ export default function WadersAdventurePage() {
     <main className="bg-[#12072e] text-white overflow-x-hidden">
       {/* HERO COVER */}
       <CoverHero />
+      <div className="stripe-band" aria-hidden="true" />
 
-      {/* PANEL 1 */}
-      <section id="meet" className="bg-[#251052] border-y-[12px] border-black py-24">
-        <div className="max-w-6xl mx-auto px-6">
+      {/* MEET WADER */}
+      <section id="meet" className="grid-bg-alt py-20 md:py-24 scroll-mt-4">
+        <div className="max-w-6xl mx-auto px-5 md:px-6">
           <div className="comic-panel">
             <div className="grid md:grid-cols-2 gap-10 items-center">
               <img
@@ -18,13 +19,13 @@ export default function WadersAdventurePage() {
                 alt="A pixel-art city skyline at sunset with floating letters"
                 width={960}
                 height={540}
-                className="w-full rounded-xl border-8 border-black pixelated"
+                className="w-full pixel-frame pixelated"
               />
 
               <div>
                 <div className="speech-bubble">I&apos;m Wader! Let&apos;s Read!</div>
 
-                <h2 className="text-3xl md:text-5xl font-black mt-8">
+                <h2 className="pixel-heading text-xl md:text-3xl mt-8">
                   EVERY HERO
                   <br />
                   STARTS
@@ -42,17 +43,15 @@ export default function WadersAdventurePage() {
         </div>
       </section>
 
-      {/* PANEL 2 */}
-      <section className="bg-[#130726] py-24">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="comic-panel bg-[#2c0d43]">
+      {/* VILLAIN */}
+      <section className="grid-bg py-20 md:py-24">
+        <div className="max-w-6xl mx-auto px-5 md:px-6">
+          <div className="comic-panel !bg-[#2c0d43]">
             <div className="grid md:grid-cols-2 gap-10 items-center">
               <div>
-                <div className="bg-red-600 border-4 border-black p-3 inline-block rotate-[-2deg] font-black">
-                  VILLAIN OF THE WEEK
-                </div>
+                <div className="ribbon">VILLAIN OF THE WEEK</div>
 
-                <h2 className="text-3xl md:text-5xl font-black mt-6">
+                <h2 className="pixel-heading text-xl md:text-3xl mt-8">
                   THE WORD
                   <br />
                   DESTROYER
@@ -76,25 +75,25 @@ export default function WadersAdventurePage() {
       </section>
 
       {/* POWER UP */}
-      <section id="power-up" className="py-24 bg-[#251052]">
-        <div className="max-w-6xl mx-auto px-6">
+      <section id="power-up" className="grid-bg-alt py-20 md:py-24">
+        <div className="max-w-6xl mx-auto px-5 md:px-6">
           <div className="comic-panel">
             <h2 className="comic-title">POWER UP YOUR READING!</h2>
 
             <div className="grid md:grid-cols-3 gap-8 mt-12">
               <div className="feature-card">
                 <div className="pow">KA-POW!</div>
-                <h3 className="mt-2 text-xl font-black">Vocabulary Boost</h3>
+                <h3 className="mt-3 font-pixel text-[0.75rem] leading-relaxed">Vocabulary Boost</h3>
               </div>
 
               <div className="feature-card">
                 <div className="pow">BOOM!</div>
-                <h3 className="mt-2 text-xl font-black">Reading Speed</h3>
+                <h3 className="mt-3 font-pixel text-[0.75rem] leading-relaxed">Reading Speed</h3>
               </div>
 
               <div className="feature-card">
                 <div className="pow">ZAP!</div>
-                <h3 className="mt-2 text-xl font-black">Comprehension Power</h3>
+                <h3 className="mt-3 font-pixel text-[0.75rem] leading-relaxed">Comprehension Power</h3>
               </div>
             </div>
           </div>
@@ -105,8 +104,8 @@ export default function WadersAdventurePage() {
       <HowToPlay />
 
       {/* ACTION MENU */}
-      <section className="py-24 bg-[#16092c]">
-        <div className="text-center px-6">
+      <section className="grid-bg-alt py-20 md:py-24">
+        <div className="text-center px-5">
           <h2 className="comic-title mb-12">CHOOSE YOUR MISSION</h2>
 
           <div className="flex flex-wrap justify-center gap-8">
@@ -124,25 +123,25 @@ export default function WadersAdventurePage() {
               className="action-btn bg-yellow-400 text-black opacity-70 cursor-not-allowed"
             >
               LEADERBOARD
-              <span className="block mt-1 text-sm">COMING SOON</span>
+              <span className="block mt-2 text-[0.6rem]">COMING SOON</span>
             </span>
           </div>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-black py-20">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <Link
-            href="/play"
-            className="inline-block bg-pink-500 border-8 border-white rounded-3xl px-8 md:px-12 py-5 md:py-6 text-2xl md:text-3xl font-black shadow-[10px_10px_0px_#421842]"
-          >
+      <div className="stripe-band" aria-hidden="true" />
+      <footer className="bg-black py-16 md:py-20">
+        <div className="max-w-6xl mx-auto px-5 md:px-6 text-center">
+          <Link href="/play" className="comic-btn bg-pink-500 !text-sm md:!text-base">
             📸 SCAN HOMEWORK
           </Link>
 
-          <p className="mt-10 text-gray-400">Created with ❤️ for Wade</p>
+          <p className="mt-10 font-pixel text-[0.7rem] leading-loose text-gray-300">Created with ❤️ for Wade</p>
 
-          <p className="text-sm text-gray-500 mt-2">Wader&apos;s Adventure • Issue #1</p>
+          <p className="mt-2 font-pixel text-[0.6rem] leading-loose text-gray-500">
+            Wader&apos;s Adventure • Issue #1
+          </p>
         </div>
       </footer>
     </main>
