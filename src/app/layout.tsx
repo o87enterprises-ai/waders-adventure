@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Press_Start_2P } from 'next/font/google';
 import './globals.css';
+import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 
 const pixel = Press_Start_2P({
   weight: '400',
@@ -23,7 +24,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={pixel.variable}>
-      <body>{children}</body>
+      <body>
+        <ServiceWorkerRegister />
+        {children}
+      </body>
     </html>
   );
 }
