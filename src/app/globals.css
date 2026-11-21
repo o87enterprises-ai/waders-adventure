@@ -1,0 +1,95 @@
+@import 'tailwindcss';
+
+@theme inline {
+  --font-pixel: var(--font-press-start), ui-monospace, monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #12072e;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@layer components {
+  .pixelated {
+    image-rendering: pixelated;
+  }
+
+  .comic-btn {
+    padding: 1rem 2rem;
+    border: 5px solid black;
+    border-radius: 18px;
+    font-weight: 900;
+    font-size: 1.25rem;
+    box-shadow: 8px 8px 0 black;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: inline-block;
+  }
+  .comic-btn:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 11px 11px 0 black;
+  }
+  .comic-btn:active {
+    transform: translate(4px, 4px);
+    box-shadow: 4px 4px 0 black;
+  }
+
+  .comic-panel {
+    background: #3c1974;
+    border: 8px solid black;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 12px 12px 0 black;
+  }
+
+  .speech-bubble {
+    background: white;
+    color: black;
+    padding: 1rem;
+    border: 5px solid black;
+    border-radius: 20px;
+    display: inline-block;
+    font-weight: 900;
+  }
+
+  .comic-title {
+    font-size: clamp(1.5rem, 4.5vw, 3.5rem);
+    font-weight: 900;
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  .feature-card {
+    background: white;
+    color: black;
+    border: 5px solid black;
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .pow {
+    color: red;
+    font-size: 2rem;
+    font-weight: 900;
+  }
+
+  .action-btn {
+    padding: 2rem 4rem;
+    border: 6px solid black;
+    border-radius: 20px;
+    font-size: 2rem;
+    font-weight: 900;
+    box-shadow: 10px 10px 0 black;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: inline-block;
+  }
+  .action-btn:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 13px 13px 0 black;
+  }
+}
